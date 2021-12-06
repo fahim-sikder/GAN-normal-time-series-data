@@ -6,19 +6,15 @@ from scipy import stats
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import pandas as pd
 
-
+    
 def normalize(data):
-    
-    min_val = np.min(np.min(data, axis=0), axis=0)
-    data = data - min_val
 
-    max_val = np.max(np.max(data, axis=0), axis=0)
-    data = data / (max_val + 1e-7)
-    
-    data = data.astype(np.float32)
-    #data = torch.from_numpy(data)
-    
-    return data
+  numerator = data - np.min(data, 0)
+  denominator = np.max(data, 0) - np.min(data, 0)
+  norm_data = numerator / (denominator + 1e-7)
+  
+  return norm_data
+  
 
 
 class TimeSeriesData(torch.utils.data.Dataset):

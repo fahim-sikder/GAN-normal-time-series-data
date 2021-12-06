@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 import torch
 import torch.nn as nn
@@ -339,14 +340,37 @@ def train():
                 writer.add_scalar('D_Loss', d_loss.item(), running_gan_epoch)
                 writer.add_scalar('G_Loss', g_loss.item(), running_gan_epoch)
                 
-            if i%len(data_loader)==0 and running_gan_epoch%500==0:
+            if i%len(data_loader)==0 and running_gan_epoch%100==0:
                 
                 with torch.no_grad():
                     
                     fake = generator(fixed_noise).detach().cpu()
+                    
+                    fig = plt.figure(constrained_layout=True, figsize=(20,10))
+                    
+                    spec = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
+                    
+                    
                     idx = np.random.permutation(32)[:5]
+                    
+                    ax = fig.add_subplot(spec[0,0])
+                    ax.set_title(f'Original idx: {idx[0]}',
+                         fontsize=20,
+                         color='red',
+                         pad=10)
+                    ori_data = data.detach().cpu()
+                    plt.plot(ori_data[idx[0]])
+                    
+                    ax2 = fig.add_subplot(spec[0,1])
+                    ax2.set_title(f'Synthetic idx: {idx[0]}',
+                                  fontsize=20,
+                                  color='red',
+                                  pad=10)
                     plt.plot(fake[idx[0]])
-                    plt.title(f'Generated idx: {idx[0]}')
+                    fig.suptitle(f'Synthetic vs Real data',
+                                 fontsize=16,
+                                 color='blue')
+
                     plt.savefig(f'{folder_name}/output/gan/output_epoch-{running_gan_epoch+1}.png')
                     plt.close()
                     
